@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="20dp"
+    android:elevation="10dp"
+    android:layout_marginVertical="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:background="@color/rusty_red">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/iv_small_profile"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/tv_small_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toTopOf="@+id/tv_id"
+            app:layout_constraintStart_toEndOf="@+id/iv_small_profile"
+            app:layout_constraintTop_toTopOf="@+id/iv_small_profile"
+            app:layout_constraintVertical_chainStyle="spread"
+            tools:text="@tools:sample/full_names" />
+
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_small_profile"
+            app:layout_constraintStart_toEndOf="@+id/iv_small_profile"
+            app:layout_constraintTop_toBottomOf="@+id/tv_small_username"
+            tools:text="ID User"
+            app:drawableStartCompat="@drawable/ic_outline_info_24"
+            android:gravity="center_vertical"
+            android:drawablePadding="8dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>
