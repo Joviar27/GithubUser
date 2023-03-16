@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">GithubUser</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="tab_content_description">User follower and following</string>
+    <string name="toolbar_title">Github User</string>
+    <string name="toolbar_title_detail">Detail Github User</string>
+    <string name="search">Search</string>
+    <string name="search_hint">Find User</string>
 </resources>
