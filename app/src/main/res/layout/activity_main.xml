@@ -5,8 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_raspberry"
-    tools:context=".MainActivity">
+    tools:context=".ui.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -19,7 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:text="@string/toolbar_title"
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textAppearance="@style/TextAppearance.Material3.ActionBar.Title"
             android:layout_gravity="center"
             app:drawableStartCompat="@drawable/ic_baseline_people_alt_24"

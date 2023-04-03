@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+    tools:context=".ui.HomeFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_user"
@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/dark_raspberry"
+        android:background="?attr/colorPrimaryContainer"
         android:paddingHorizontal="16dp"
         android:paddingVertical="8dp"
         tools:listitem="@layout/viewholder_user"/>
