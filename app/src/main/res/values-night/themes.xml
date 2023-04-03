@@ -2,15 +2,37 @@
     <!-- Base application theme. -->
     <style name="Theme.GithubUser" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimary">@color/deep_magenta</item>
+        <item name="colorPrimaryVariant">@color/dark_magenta</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/dark_raspberry</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/rusty_red</item>
+        <item name="colorSecondaryVariant">@color/tangerine</item>
+        <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="toolbarStyle">@style/ToolbarStyle</item>
+        <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:itemBackground">?attr/colorSecondary</item>
+        <item name="android:itemTextAppearance">@style/OptionMenuText</item>
+    </style>
+
+    <style name="Theme.GithubUser.NoActionBar" parent="Theme.GithubUser">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="Widget.AppCompat.Toolbar">
+        <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="searchHintIcon">@null</item>
+    </style>
+
+    <style name="OptionMenuText">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 </resources>

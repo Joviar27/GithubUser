@@ -2,18 +2,21 @@
     <!-- Base application theme. -->
     <style name="Theme.GithubUser" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/deep_magenta</item>
-        <item name="colorPrimaryVariant">@color/dark_magenta</item>
+        <item name="colorPrimary">@color/amethyst_gray</item>
+        <item name="colorPrimaryVariant">@color/slate_blue</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryContainer">@color/old_rose</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/tangerine</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorSecondary">@color/melon_pink</item>
+        <item name="colorSecondaryVariant">@color/dusty_apricot</item>
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="toolbarStyle">@style/ToolbarStyle</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="android:itemBackground">?attr/colorSecondary</item>
+        <item name="android:itemTextAppearance">@style/OptionMenuText</item>
     </style>
 
     <style name="Theme.GithubUser.NoActionBar" parent="Theme.GithubUser">
@@ -22,10 +25,14 @@
     </style>
 
     <style name="ToolbarStyle" parent="Widget.AppCompat.Toolbar">
-        <item name="android:background">@color/deep_magenta</item>
+        <item name="android:background">?attr/colorPrimary</item>
     </style>
 
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="searchHintIcon">@null</item>
+    </style>
+
+    <style name="OptionMenuText">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 </resources>
