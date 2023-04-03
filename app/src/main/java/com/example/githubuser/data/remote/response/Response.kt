@@ -1,4 +1,4 @@
-package com.example.githubuser
+package com.example.githubuser.data.remote.response
 
 import com.google.gson.annotations.SerializedName
 
@@ -17,7 +17,7 @@ data class User(
 	val avatarUrl: String,
 
 	@field:SerializedName("id")
-	val id: Int,
+	val id: Int
 
 )
 
@@ -46,4 +46,7 @@ data class DetailUserResponse(
 
 	@field:SerializedName("location")
 	val location: String,
+
+	@field:SerializedName("id")
+	val id: Int
 )
