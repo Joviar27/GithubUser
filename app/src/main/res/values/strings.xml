@@ -7,4 +7,12 @@
     <string name="toolbar_title_detail">Detail Github User</string>
     <string name="search">Search</string>
     <string name="search_hint">Find User</string>
+    <string name="followers">Followers</string>
+    <string name="following">Following</string>
+    <string name="bookmark_user">bookmark_user</string>
+    <string name="favourite">favourite</string>
+    <string name="share">Share</string>
+    <string name="add_to_favourite">Add to Favourite</string>
+    <string name="remove_from_favourite">Remove from Favourite</string>
+    <string name="theme">theme</string>
 </resources>
