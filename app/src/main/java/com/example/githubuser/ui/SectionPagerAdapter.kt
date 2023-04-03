@@ -1,16 +1,13 @@
-package com.example.githubuser
+package com.example.githubuser.ui
 
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class SectionPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+class SectionPagerAdapter internal constructor(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
     var user :String = ""
-    var type : Int = 0
 
     override fun getItemCount(): Int {
         return 2
@@ -22,8 +19,7 @@ class SectionPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(act
 
         fragment.arguments = Bundle().apply {
             putString(FollowFragment.EXTRA_NAME, user)
-            putInt(FollowFragment.EXTRA_TYPE, type)
-            Log.d(ContentValues.TAG, " Di section pager $type $user")
+            putInt(FollowFragment.EXTRA_TYPE, position)
         }
         return fragment
     }
