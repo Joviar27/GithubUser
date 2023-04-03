@@ -9,4 +9,17 @@
         android:icon="@drawable/ic_search_white_24"
         app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="collapseActionView|ifRoom" />
+
+    <item
+        android:id="@+id/favourite"
+        android:title="@string/favourite"
+        android:icon="@drawable/ic_baseline_star_24"
+        app:showAsAction="collapseActionView|ifRoom"/>
+
+    <item
+        android:id="@+id/theme"
+        android:title="@string/theme"
+        android:icon="@drawable/ic_baseline_dark_mode_24"
+        app:showAsAction="collapseActionView|ifRoom"/>
+
 </menu>
