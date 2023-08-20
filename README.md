@@ -9,6 +9,8 @@ Made for Dicoding Fundamental Android course. This app use Github API to display
 - Change to dark/light mode.
 
 ## Tech Stack
+- Recyclerview with adapet to display list
+- Glide library to manipulate image
 - Room Database with DAO for local database
 - Datastore to save user preference
 - Retrofit2, OKhttp3, and GSON Converter for networking
