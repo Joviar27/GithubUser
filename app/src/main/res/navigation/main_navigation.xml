@@ -6,7 +6,7 @@
     app:startDestination="@id/userListFragment">
     <fragment
         android:id="@+id/userListFragment"
-        android:name="com.example.githubuser.ui.HomeFragment"
+        android:name="com.example.githubuser.ui.home.HomeFragment"
         android:label="fragment_user_list"
         tools:layout="@layout/fragment_userlist" >
         <action
@@ -17,22 +17,19 @@
         <action
             android:id="@+id/action_userListFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
-        <action
-            android:id="@+id/action_userListFragment_to_favouriteFragment2"
-            app:destination="@id/favouriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
-        android:name="com.example.githubuser.ui.DetailFragment"
+        android:name="com.example.githubuser.ui.detail.DetailFragment"
         android:label="fragment_detail"
         tools:layout="@layout/fragment_detail" >
         <argument
             android:name="user"
-            app:argType="com.example.githubuser.data.local.entity.UserEntity"/>
+            app:argType="com.example.githubuser.domain.User"/>
     </fragment>
     <fragment
         android:id="@+id/favouriteFragment"
-        android:name="com.example.githubuser.ui.FavouriteFragment"
+        android:name="com.example.githubuser.ui.favourite.FavouriteFragment"
         android:label="FavouriteFragment"
         tools:layout="@layout/fragment_userlist">
         <action

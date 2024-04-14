@@ -5,13 +5,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.MainActivity">
+    tools:context=".ui.main.MainActivity">
 
-    <androidx.appcompat.widget.Toolbar
+    <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="?attr/actionBarSize"
+        app:popupTheme="@style/ThemeOverlay.PopupTheme"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
         <TextView
             android:id="@+id/tv_title"
@@ -23,7 +24,7 @@
             android:layout_gravity="center"
             app:drawableStartCompat="@drawable/ic_baseline_people_alt_24"
             android:drawablePadding="8dp"/>
-    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.MaterialToolbar>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/nav_host_fragment_container"

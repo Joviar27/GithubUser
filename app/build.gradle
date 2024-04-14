@@ -12,19 +12,25 @@ android {
 
     defaultConfig {
         applicationId "com.example.githubuser"
-        minSdk 30
+        minSdk 29
         targetSdk 33
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "API_KEY", '"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"')
     }
 
     buildTypes {
+        debug{
+            applicationIdSuffix = ".debug"
+            buildConfigField "String", "BASE_URL", "\"${getProperty("local.properties", "GITHUB_BASE_URL")}\""
+            buildConfigField "String", "TOKEN", "\"${getProperty("local.properties", "GITHUB_TOKEN")}\""
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "BASE_URL", "\"${getProperty("local.properties", "GITHUB_BASE_URL")}\""
+            buildConfigField "String", "TOKEN", "\"${getProperty("local.properties", "GITHUB_TOKEN")}\""
         }
     }
 
@@ -79,5 +85,19 @@ dependencies {
     kapt "androidx.room:room-compiler:2.6.0-alpha01"
 
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+}
 
+def getProperty(String filename, String propName) {
+    def propsFile = rootProject.file(filename)
+    if (propsFile.exists()) {
+        def props = new Properties()
+        props.load(new FileInputStream(propsFile))
+        if (props[propName] != null) {
+            return props[propName]
+        } else {
+            throw new GradleException("No such property " + propName + " in file " + filename)
+        }
+    } else {
+        throw new GradleException(filename + " does not exist!")
+    }
 }

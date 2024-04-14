@@ -1,186 +1,212 @@
 package com.example.githubuser.data
 
 import android.util.Log
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.liveData
-import androidx.lifecycle.map
-import com.example.githubuser.data.local.entity.BookmarkedUserEntity
-import com.example.githubuser.data.local.entity.FollowEntity
-import com.example.githubuser.data.local.entity.UserEntity
-import com.example.githubuser.data.local.room.BookmarkedUserDao
-import com.example.githubuser.data.local.room.FollowDao
-import com.example.githubuser.data.local.room.UserDao
+import androidx.room.withTransaction
+import com.example.githubuser.data.local.entity.mapToDomain
+import com.example.githubuser.data.local.preference.ThemePreference
+import com.example.githubuser.data.local.room.UserDatabase
+import com.example.githubuser.data.remote.response.mapToBookmarkEntity
+import com.example.githubuser.data.remote.response.mapToEntity
+import com.example.githubuser.data.remote.response.mapToFollowerEntity
+import com.example.githubuser.data.remote.response.mapToFollowingEntity
 import com.example.githubuser.data.remote.retrofit.ApiService
+import com.example.githubuser.domain.User
+import com.example.githubuser.domain.mapToBookmarkEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-class UserRepository private constructor(
+class UserRepository constructor(
     private val apiService: ApiService,
-    private val userDao: UserDao,
-    private val bookmarkedUserDao: BookmarkedUserDao,
-    private val followDao: FollowDao,
-    private val dataStore: DataStore<Preferences>
+    private val userDatabase: UserDatabase,
+    private val themePreference: ThemePreference
 ){
-    private val THEME_KEY = booleanPreferencesKey("themes_setting")
-
-    fun getUserList(searchQuery: String) : LiveData<Result<List<UserEntity>>> = liveData{
-        emit(Result.Loading)
-
+    fun getUserList(searchQuery: String?) : Flow<Resource<List<User>>> = flow{
+        emit(Resource.Loading)
         try{
-            val responseSearch = apiService.getUserList(searchQuery)
-            val items = responseSearch.items
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+            val userDao = userDatabase.userDao()
 
-            val userList = items.map { item ->
-                val isBookmarked = bookmarkedUserDao.isUserBookmarked(item.id)
-
-                UserEntity(
-                    id = item .id,
-                    login = item .login,
-                    avatar_url = item .avatarUrl,
-                    isBookmarked = isBookmarked
-                )
+            val responseItems = if(searchQuery.isNullOrEmpty()){
+                apiService.getGithubUser()
+            } else {
+                apiService.searchUser(searchQuery).items
             }
 
-            userDao.deleteAll()
-            userDao.insertUser(userList)
-        }
-        catch (e : Exception){
+            if(!responseItems.isNullOrEmpty()){
+                val userList = responseItems.map { item ->
+                    val isBookmarked = bookmarkedDao.isUserBookmarked(item.id)
+                    item.mapToEntity(isBookmarked)
+                }
+                userDatabase.withTransaction {
+                    userDao.deleteAll()
+                    userDao.insertUser(userList)
+                }
+            }
+        } catch (e : Exception){
             Log.d("UserRepo", "getUserList : ${e.message.toString()}")
-            emit(Result.Error(e.message.toString()))
-        }
-        val localData : LiveData<Result<List<UserEntity>>> =
-            userDao.getUserList().map {
-                Result.Success(it)
+            emit(Resource.Error(e.message.toString()))
+        } finally {
+            val userDao = userDatabase.userDao()
+            val localData = userDao.getUserList().map{
+                if(it.isNotEmpty()) Resource.Success(it.mapToDomain())
+                else Resource.Error("User data can't be found")
             }
-        emitSource(localData)
+            emitAll(localData)
+        }
     }
 
-    fun getDetailUser(name : String) : LiveData<Result<List<UserEntity>>> = liveData{
-        emit(Result.Loading)
-
+    fun getDetailUser(name : String) : Flow<Resource<User>> = flow{
+        emit(Resource.Loading)
         try{
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+            val userDao = userDatabase.userDao()
+
             val responseDetail = apiService.getUserDetail(name)
-
-            val isBookmarked = bookmarkedUserDao.isUserBookmarked(responseDetail.id)
-
-            val user = UserEntity(
-                id = responseDetail.id,
-                login = responseDetail.login,
-                avatar_url = responseDetail.avatarUrl,
-                followers = responseDetail.followers,
-                following = responseDetail.following,
-                location = responseDetail.location,
-                name = responseDetail.name,
-                isBookmarked = isBookmarked
-            )
-            userDao.updateUser(user)
+            responseDetail?.let{
+                val isBookmarked = bookmarkedDao.isUserBookmarked(responseDetail.id)
+                val userDetail = it.mapToEntity(isBookmarked)
+                userDao.updateUser(userDetail)
+            }
         }
         catch (e : Exception){
             Log.d("UserRepo", "getDetailUser : ${e.message.toString()}")
-            emit(Result.Error(e.message.toString()))
+            emit(Resource.Error(e.message.toString()))
+        } finally {
+            val userDao = userDatabase.userDao()
+            val localData = userDao.getSingleUser(name).map{ user->
+                Resource.Success(user.mapToDomain())
+            }
+            emitAll(localData)
         }
+    }
 
-        val localData : LiveData<Result<List<UserEntity>>> =
-              userDao.getSingleUser(name).map { user->
-                Result.Success(user)
+    fun getFavouriteDetailUser(name : String) : Flow<Resource<User>> = flow{
+        emit(Resource.Loading)
+        try{
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+
+            val responseDetail = apiService.getUserDetail(name)
+            responseDetail?.let{
+                val userDetail = it.mapToBookmarkEntity()
+                bookmarkedDao.updateUser(userDetail)
             }
-        emitSource(localData)
+        }
+        catch (e : Exception){
+            Log.d("UserRepo", "getDetailUser : ${e.message.toString()}")
+            emit(Resource.Error(e.message.toString()))
+        } finally {
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+            val localData = bookmarkedDao.getSingleBookmarked(name).map{ user->
+                Resource.Success(user.mapToDomain())
+            }
+            emitAll(localData)
+        }
     }
 
-    fun getBookmarkedUser() : LiveData<List<BookmarkedUserEntity>>{
-        return bookmarkedUserDao.getBookmarkedUser()
+    fun getBookmarkedUser() : Flow<Resource<List<User>>> = flow{
+        emit(Resource.Loading)
+        try{
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+            val bookmarkedUser = bookmarkedDao.getBookmarkedUser().map {
+                Resource.Success(it.mapToDomain())
+            }
+            emitAll(bookmarkedUser)
+        } catch (e : Exception) {
+            Log.d("UserRepo", "getBookmarkedUser : ${e.message.toString()}")
+            emit(Resource.Error(e.message.toString()))
+        }
     }
 
-    suspend fun setBookmarkedUser(user : UserEntity) {
-        val bookmarkedUser = BookmarkedUserEntity(
-            id = user.id,
-            name = user.name,
-            login = user.login,
-            location = user.location,
-            avatar_url = user.avatar_url,
-            followers = user.followers,
-            following = user.following
-        )
-        userDao.updateBookmarked(user.id, true)
-        bookmarkedUserDao.insertBookmarkedUser(bookmarkedUser)
+    fun setBookmarkedUser(user : User): Flow<Resource<Unit>> = flow{
+        emit(Resource.Loading)
+        try{
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+            val userDao = userDatabase.userDao()
+
+            userDatabase.withTransaction {
+                userDao.updateBookmarked(user.id, true)
+                bookmarkedDao.insertBookmarkedUser(user.mapToBookmarkEntity())
+            }
+            emit(Resource.Success(Unit))
+        } catch (e : Exception){
+            Log.d("UserRepo", "setBookmarkedUser : ${e.message.toString()}")
+            emit(Resource.Error(e.message.toString()))
+        }
     }
 
-    suspend fun deleteBookmarkedUser(id : Int){
-        userDao.updateBookmarked(id, false)
-        bookmarkedUserDao.deleteBookmarkedUser(id)
-    }
-
-    fun getFollower(name : String) : LiveData<Result<List<FollowEntity>>> = liveData{
-        emit(Result.Loading)
-
+    fun deleteBookmarkedUser(id : Int): Flow<Resource<Unit>> = flow{
+        emit(Resource.Loading)
         try {
-            val followers = apiService.getFollowers(name)
-            followDao.deleteFollower()
+            val bookmarkedDao = userDatabase.bookmarkedUserDao()
+            val userDao = userDatabase.userDao()
 
-            val followerList = followers.map {
-
-                FollowEntity(
-                    id = it.id,
-                    login = it.login,
-                    avatar_url = it.avatarUrl,
-                    type = 0
-                )
+            userDatabase.withTransaction {
+                userDao.updateBookmarked(id, false)
+                bookmarkedDao.deleteBookmarkedUser(id)
             }
-            followDao.insertFollow(followerList)
+            emit(Resource.Success(Unit))
+        }catch (e : Exception){
+            Log.d("UserRepo", "deleteBookmarkedUser : ${e.message.toString()}")
+            emit(Resource.Error(e.message.toString()))
+        }
+    }
+
+    fun getFollower(name : String) : Flow<Resource<List<User>>> = flow{
+        emit(Resource.Loading)
+        try {
+            val followDao = userDatabase.followerDao()
+
+            val followerResponse = apiService.getFollowers(name)
+            val followerList = followerResponse.map {it.mapToFollowerEntity()}
+
+            userDatabase.withTransaction {
+                followDao.deleteFollower()
+                followDao.insertFollow(followerList)
+            }
         }
         catch (e : Exception){
             Log.d("UserRepo", "getFollowers : ${e.message.toString()}")
-            emit(Result.Error(e.message.toString()))
+            emit(Resource.Error(e.message.toString()))
+        } finally {
+            val followerDao = userDatabase.followerDao()
+            val localData = followerDao.getFollower().map{
+                Resource.Success(it.mapToDomain())
+            }
+            emitAll(localData)
         }
-
-        val localData : LiveData<Result<List<FollowEntity>>> = followDao.getFollower().map {
-            Result.Success(it)
-        }
-        emitSource(localData)
     }
 
-    fun getFollowing(name : String) : LiveData<Result<List<FollowEntity>>> = liveData{
-        emit(Result.Loading)
-
+    fun getFollowing(name : String) : Flow<Resource<List<User>>> = flow{
+        emit(Resource.Loading)
         try {
-            val following = apiService.getFollowing(name)
-            followDao.deleteFollowing()
-            val followingList = following.map {
+            val followDao = userDatabase.followingDao()
 
-                FollowEntity(
-                    id = it.id,
-                    login = it.login,
-                    avatar_url = it.avatarUrl,
-                    type = 1
-                )
+            val followerResponse = apiService.getFollowing(name)
+            val followerList = followerResponse.map{it.mapToFollowingEntity()}
+
+            userDatabase.withTransaction {
+                followDao.deleteFollowing()
+                followDao.insertFollow(followerList)
             }
-            followDao.insertFollow(followingList)
         }
         catch (e : Exception){
             Log.d("UserRepo", "getFollowing : ${e.message.toString()}")
-            emit(Result.Error(e.message.toString()))
-        }
-
-        val localData : LiveData<Result<List<FollowEntity>>> = followDao.getFollowing().map {
-            Result.Success(it)
-        }
-        emitSource(localData)
-    }
-
-    fun getThemeSetting() : Flow<Boolean> {
-        return dataStore.data.map {
-            it[THEME_KEY] ?: true
+            emit(Resource.Error(e.message.toString()))
+        } finally {
+            val followingDao = userDatabase.followingDao()
+            val localData = followingDao.getFollowing().map{
+                Resource.Success(it.mapToDomain())
+            }
+            emitAll(localData)
         }
     }
 
-    suspend fun saveSetting(darkModeActive : Boolean){
-        dataStore.edit {
-            it[THEME_KEY] = darkModeActive
-        }
+    fun getThemeSetting() = themePreference.getThemeSetting()
+
+    suspend fun switchThemeSetting(){
+        themePreference.switchThemeSetting()
     }
 
     companion object{
@@ -189,13 +215,11 @@ class UserRepository private constructor(
 
         fun getInstance(
             apiService:ApiService,
-            userDao: UserDao,
-            bookmarkedUserDao: BookmarkedUserDao,
-            followDao: FollowDao,
-            dataStore: DataStore<Preferences>
+            userDatabase: UserDatabase,
+            themePreference: ThemePreference
         ) : UserRepository =
             instance ?: synchronized(this){
-                instance ?: UserRepository(apiService, userDao, bookmarkedUserDao,followDao,dataStore)
+                instance ?: UserRepository(apiService, userDatabase, themePreference)
             }.also { instance=it }
     }
 }

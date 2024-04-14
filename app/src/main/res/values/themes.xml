@@ -15,8 +15,8 @@
         <!-- Customize your theme here. -->
         <item name="toolbarStyle">@style/ToolbarStyle</item>
         <item name="searchViewStyle">@style/SearchViewStyle</item>
-        <item name="android:itemBackground">?attr/colorSecondary</item>
-        <item name="android:itemTextAppearance">@style/OptionMenuText</item>
+        <!--<item name="android:itemBackground">?attr/colorSecondary</item>-->
+        <!--<item name="android:itemTextAppearance">@style/OptionMenuText</item>-->
     </style>
 
     <style name="Theme.GithubUser.NoActionBar" parent="Theme.GithubUser">
@@ -33,6 +33,11 @@
     </style>
 
     <style name="OptionMenuText">
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+    </style>
+
+    <style name="ThemeOverlay.PopupTheme" parent="Theme.AppCompat.DayNight">
+        <item name="android:background">?attr/colorSecondary</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 </resources>

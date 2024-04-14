@@ -1,11 +1,12 @@
-package com.example.githubuser.ui
+package com.example.githubuser.ui.component
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.example.githubuser.ui.follow.FollowFragment
 
-class SectionPagerAdapter internal constructor(activity: FragmentActivity) : FragmentStateAdapter(activity) {
+class SectionPagerAdapter(activity: FragmentActivity) : FragmentStateAdapter(activity) {
 
     var user :String = ""
 

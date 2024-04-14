@@ -5,14 +5,16 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.githubuser.data.local.entity.BookmarkedUserEntity
-import com.example.githubuser.data.local.entity.FollowEntity
+import com.example.githubuser.data.local.entity.FollowerEntity
+import com.example.githubuser.data.local.entity.FollowingEntity
 import com.example.githubuser.data.local.entity.UserEntity
 
-@Database(entities = [UserEntity::class, BookmarkedUserEntity::class, FollowEntity::class], version = 1, exportSchema = false)
+@Database(entities = [UserEntity::class, BookmarkedUserEntity::class, FollowerEntity::class, FollowingEntity::class], version = 1, exportSchema = false)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao():UserDao
     abstract fun bookmarkedUserDao():BookmarkedUserDao
-    abstract fun followDao() : FollowDao
+    abstract fun followerDao() : FollowerDao
+    abstract fun followingDao() : FollowingDao
 
     companion object {
         @Volatile
@@ -20,7 +22,7 @@ abstract class UserDatabase : RoomDatabase() {
         fun getInstance(context: Context): UserDatabase =
             instance ?: synchronized(this) {
                 instance ?: Room.databaseBuilder(
-                    context.applicationContext,
+                    context,
                     UserDatabase::class.java, "User.db"
                 ).build()
             }

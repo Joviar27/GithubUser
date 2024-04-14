@@ -1,22 +1,28 @@
 package com.example.githubuser.di
 
 import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.example.githubuser.data.UserRepository
+import com.example.githubuser.data.local.preference.ThemePreference
 import com.example.githubuser.data.local.room.UserDatabase
 import com.example.githubuser.data.remote.retrofit.ApiConfig
 
 object Injection {
 
-    fun provideRepository(context: Context, dataStore: DataStore <Preferences>) : UserRepository{
-        val apiService = ApiConfig.getApiService()
+    private fun provideUserPreference(context: Context) =
+        ThemePreference.getInstance(context)
 
-        val database = UserDatabase.getInstance(context)
-        val userDao =  database.userDao()
-        val bookmarkedUserDao = database.bookmarkedUserDao()
-        val followDao  = database.followDao()
+    private fun provideUserDatabase(context: Context)=
+        UserDatabase.getInstance(context)
 
-        return UserRepository.getInstance(apiService, userDao, bookmarkedUserDao, followDao, dataStore)
-    }
+    private fun provideApiService()=
+        ApiConfig.getApiService()
+
+    fun provideUserRepository(
+        context: Context,
+    ): UserRepository =
+        UserRepository.getInstance(
+            provideApiService(),
+            provideUserDatabase(context),
+            provideUserPreference(context)
+        )
 }

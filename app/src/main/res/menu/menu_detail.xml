@@ -4,6 +4,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/theme"
+        android:title="@string/theme"
+        android:icon="@drawable/ic_baseline_dark_mode_24"
+        app:showAsAction="collapseActionView|ifRoom"/>
+
+    <item
         android:id="@+id/share"
         android:title="@string/share"
         app:showAsAction="never"/>
