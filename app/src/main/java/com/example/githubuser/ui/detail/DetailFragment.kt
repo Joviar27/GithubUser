@@ -23,7 +23,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.githubuser.R
 import com.example.githubuser.data.Resource
 import com.example.githubuser.databinding.FragmentDetailBinding
-import com.example.githubuser.domain.User
+import com.example.githubuser.domain.model.User
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.SectionPagerAdapter
 import com.example.githubuser.ui.ViewModelFactory
@@ -34,7 +34,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     FragmentDetailBinding::inflate
 ), MenuProvider {
 
-//    override val viewModel: DetailViewModel by lazy { obtainViewModel() }
+    //override val viewModel: DetailViewModel by lazy { obtainViewModel() }
     private lateinit var viewModel: DetailViewModel
 
     private val menuHost: MenuHost by lazy { requireActivity() }
@@ -62,8 +62,8 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     }
 
     override fun observeData() {
-        user = DetailFragmentArgs.fromBundle(arguments as Bundle).user
-        viewModel.updateUserName(user.login)
+        //user = DetailFragmentArgs.fromBundle(arguments as Bundle).user
+        //viewModel.updateUserName(user.login)
 
         if (user.isBookmarked==true) {
             viewModel.getFavouriteDetailUser().observe(viewLifecycleOwner){ result ->
@@ -159,7 +159,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_detail,menu)
 
-        viewModel.darkMode.observe(viewLifecycleOwner){
+        viewModel.getThemeSetting().observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -227,7 +227,15 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                     }
                 }
             }
-            R.id.theme -> viewModel.switchThemeSetting()
+            R.id.theme -> viewModel.switchThemeSetting().observe(viewLifecycleOwner){
+                if(it is Resource.Error) {
+                    Toast.makeText(
+                        requireContext(),
+                        "Failed to update theme",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
             android.R.id.home -> {
                 Log.d("UserRepo", "Habis pencet back kok masih get detail user")
                 findNavController().navigateUp()

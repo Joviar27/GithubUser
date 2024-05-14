@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.example.githubuser.data.UserRepository
+import com.example.githubuser.data.Repository
 
 class FollowViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: Repository
 ) : ViewModel(){
 
     private val _userName = MutableLiveData<String>()

@@ -1,4 +1,4 @@
-package com.example.githubuser.domain
+package com.example.githubuser.domain.model
 
 import android.os.Parcelable
 import com.example.githubuser.data.local.entity.BookmarkedUserEntity

@@ -1,7 +1,7 @@
 package com.example.githubuser.di
 
 import android.content.Context
-import com.example.githubuser.data.UserRepository
+import com.example.githubuser.data.Repository
 import com.example.githubuser.data.local.preference.ThemePreference
 import com.example.githubuser.data.local.room.UserDatabase
 import com.example.githubuser.data.remote.retrofit.ApiConfig
@@ -19,8 +19,8 @@ object Injection {
 
     fun provideUserRepository(
         context: Context,
-    ): UserRepository =
-        UserRepository.getInstance(
+    ): Repository =
+        Repository.getInstance(
             provideApiService(),
             provideUserDatabase(context),
             provideUserPreference(context)

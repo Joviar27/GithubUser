@@ -135,7 +135,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_main,menu)
 
-        viewModel.darkMode.observe(viewLifecycleOwner){
+        viewModel.getThemeSetting().observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -177,7 +177,15 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
                 view?.findNavController()?.navigate(toFavourite)
             }
             R.id.theme ->{
-                viewModel.switchThemeSetting()
+                viewModel.switchThemeSetting().observe(viewLifecycleOwner){
+                    if(it is Resource.Error) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Failed to update theme",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             }
         }
         return true

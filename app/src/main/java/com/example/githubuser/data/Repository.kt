@@ -1,5 +1,6 @@
 package com.example.githubuser.data
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.room.withTransaction
 import com.example.githubuser.data.local.entity.mapToDomain
@@ -10,19 +11,23 @@ import com.example.githubuser.data.remote.response.mapToEntity
 import com.example.githubuser.data.remote.response.mapToFollowerEntity
 import com.example.githubuser.data.remote.response.mapToFollowingEntity
 import com.example.githubuser.data.remote.retrofit.ApiService
-import com.example.githubuser.domain.User
-import com.example.githubuser.domain.mapToBookmarkEntity
+import com.example.githubuser.domain.model.User
+import com.example.githubuser.domain.model.mapToBookmarkEntity
+import com.example.githubuser.domain.repository.IRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 
-class UserRepository constructor(
+class Repository constructor(
     private val apiService: ApiService,
     private val userDatabase: UserDatabase,
     private val themePreference: ThemePreference
-){
-    fun getUserList(searchQuery: String?) : Flow<Resource<List<User>>> = flow{
+): IRepository{
+    override fun getUserList(searchQuery: String?) : Flow<Resource<List<User>>> = flow{
         emit(Resource.Loading)
         try{
             val bookmarkedDao = userDatabase.bookmarkedUserDao()
@@ -57,7 +62,7 @@ class UserRepository constructor(
         }
     }
 
-    fun getDetailUser(name : String) : Flow<Resource<User>> = flow{
+    override fun getDetailUser(name : String) : Flow<Resource<User>> = flow{
         emit(Resource.Loading)
         try{
             val bookmarkedDao = userDatabase.bookmarkedUserDao()
@@ -82,7 +87,7 @@ class UserRepository constructor(
         }
     }
 
-    fun getFavouriteDetailUser(name : String) : Flow<Resource<User>> = flow{
+    override fun getBookmarkedDetailUser(name : String) : Flow<Resource<User>> = flow{
         emit(Resource.Loading)
         try{
             val bookmarkedDao = userDatabase.bookmarkedUserDao()
@@ -105,7 +110,7 @@ class UserRepository constructor(
         }
     }
 
-    fun getBookmarkedUser() : Flow<Resource<List<User>>> = flow{
+    override fun getBookmarkedUser() : Flow<Resource<List<User>>> = flow{
         emit(Resource.Loading)
         try{
             val bookmarkedDao = userDatabase.bookmarkedUserDao()
@@ -119,7 +124,7 @@ class UserRepository constructor(
         }
     }
 
-    fun setBookmarkedUser(user : User): Flow<Resource<Unit>> = flow{
+    override fun setBookmarkedUser(user : User): Flow<Resource<Unit>> = flow{
         emit(Resource.Loading)
         try{
             val bookmarkedDao = userDatabase.bookmarkedUserDao()
@@ -136,7 +141,7 @@ class UserRepository constructor(
         }
     }
 
-    fun deleteBookmarkedUser(id : Int): Flow<Resource<Unit>> = flow{
+    override fun deleteBookmarkedUser(id : Int): Flow<Resource<Unit>> = flow{
         emit(Resource.Loading)
         try {
             val bookmarkedDao = userDatabase.bookmarkedUserDao()
@@ -153,7 +158,7 @@ class UserRepository constructor(
         }
     }
 
-    fun getFollower(name : String) : Flow<Resource<List<User>>> = flow{
+    override fun getFollower(name : String) : Flow<Resource<List<User>>> = flow{
         emit(Resource.Loading)
         try {
             val followDao = userDatabase.followerDao()
@@ -178,7 +183,7 @@ class UserRepository constructor(
         }
     }
 
-    fun getFollowing(name : String) : Flow<Resource<List<User>>> = flow{
+    override fun getFollowing(name : String) : Flow<Resource<List<User>>> = flow{
         emit(Resource.Loading)
         try {
             val followDao = userDatabase.followingDao()
@@ -203,23 +208,35 @@ class UserRepository constructor(
         }
     }
 
-    fun getThemeSetting() = themePreference.getThemeSetting()
+    override fun getThemeSetting(): Flow<Boolean>  = flow{
+        themePreference.getThemeSetting().onEach {
+            emit(it)
+        }.catch {
+            Log.d(TAG, "getThemeSetting: ${it.message}")
+        }.first()
+    }
 
-    suspend fun switchThemeSetting(){
-        themePreference.switchThemeSetting()
+    override fun switchThemeSetting(): Flow<Resource<Unit>> = flow{
+        try {
+            themePreference.switchThemeSetting()
+            emit(Resource.Success(Unit))
+        }catch (e: Exception){
+            Log.d(TAG, "getThemeSetting: ${e.message}")
+            emit(Resource.Error(e.message.toString()))
+        }
     }
 
     companion object{
         @Volatile
-        private var instance : UserRepository? = null
+        private var instance : Repository? = null
 
         fun getInstance(
             apiService:ApiService,
             userDatabase: UserDatabase,
             themePreference: ThemePreference
-        ) : UserRepository =
+        ) : Repository =
             instance ?: synchronized(this){
-                instance ?: UserRepository(apiService, userDatabase, themePreference)
+                instance ?: Repository(apiService, userDatabase, themePreference)
             }.also { instance=it }
     }
 }
