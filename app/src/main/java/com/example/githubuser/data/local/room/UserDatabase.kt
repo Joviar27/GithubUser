@@ -9,7 +9,14 @@ import com.example.githubuser.data.local.entity.FollowerEntity
 import com.example.githubuser.data.local.entity.FollowingEntity
 import com.example.githubuser.data.local.entity.UserEntity
 
-@Database(entities = [UserEntity::class, BookmarkedUserEntity::class, FollowerEntity::class, FollowingEntity::class], version = 1, exportSchema = false)
+@Database(entities = [
+    UserEntity::class,
+    BookmarkedUserEntity::class,
+    FollowerEntity::class,
+    FollowingEntity::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class UserDatabase : RoomDatabase() {
     abstract fun userDao():UserDao
     abstract fun bookmarkedUserDao():BookmarkedUserDao
