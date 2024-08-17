@@ -3,7 +3,7 @@ package com.example.githubuser.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.githubuser.domain.User
+import com.example.githubuser.domain.model.User
 
 @Entity(tableName = "follower")
 class FollowerEntity (

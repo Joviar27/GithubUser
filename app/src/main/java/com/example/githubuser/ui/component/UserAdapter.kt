@@ -11,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.githubuser.R
 import com.example.githubuser.databinding.ViewholderUserBinding
-import com.example.githubuser.domain.User
+import com.example.githubuser.domain.model.User
 import com.example.githubuser.ui.component.UserAdapter.UserViewHolder
 
 class UserAdapter(private val type: ListType) : ListAdapter<User, UserViewHolder>(DIFF_CALLBACK){

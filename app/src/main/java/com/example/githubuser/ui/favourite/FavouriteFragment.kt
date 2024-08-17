@@ -28,7 +28,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     FragmentUserlistBinding::inflate
 ), MenuProvider {
 
-//    override val viewModel: FavouriteViewModel by lazy { obtainViewModel() }
+    //override val viewModel: FavouriteViewModel by lazy { obtainViewModel() }
     private lateinit var viewModel: FavouriteViewModel
 
     private val userAdapter by lazy { UserAdapter(ListType.USER) }
@@ -120,7 +120,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_favourite,menu)
 
-        viewModel.darkMode.observe(viewLifecycleOwner){
+        viewModel.getThemeSetting().observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
