@@ -1,7 +1,7 @@
 package com.example.githubuser.di
 
-import com.example.githubuser.data.Repository
-import com.example.githubuser.domain.repository.IRepository
+import com.example.githubuser.data.repository.UserRepository
+import com.example.githubuser.domain.repository.IUserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -12,5 +12,5 @@ import dagger.hilt.components.SingletonComponent
 abstract class RepositoryModule {
 
     @Binds
-    abstract fun provideRepository(repository: Repository): IRepository
+    abstract fun provideRepository(userRepository: UserRepository): IUserRepository
 }

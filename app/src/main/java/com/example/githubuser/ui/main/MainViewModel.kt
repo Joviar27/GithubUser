@@ -4,11 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.githubuser.data.Repository
+import com.example.githubuser.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val userRepository: Repository
+    private val userRepository: UserRepository
 ): ViewModel() {
 
     private val _darkMode = MutableLiveData<Boolean>()

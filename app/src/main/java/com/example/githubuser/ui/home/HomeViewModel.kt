@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.example.githubuser.data.Resource
-import com.example.githubuser.data.Repository
+import com.example.githubuser.data.repository.UserRepository
 import com.example.githubuser.domain.model.User
 
 class HomeViewModel(
-    private val userRepository: Repository
+    private val userRepository: UserRepository
 ):ViewModel(){
 
     private val _query = MutableLiveData<String?>()

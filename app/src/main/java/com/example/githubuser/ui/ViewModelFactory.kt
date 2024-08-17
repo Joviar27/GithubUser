@@ -3,7 +3,7 @@ package com.example.githubuser.ui
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.githubuser.data.Repository
+import com.example.githubuser.data.repository.UserRepository
 import com.example.githubuser.di.Injection
 import com.example.githubuser.ui.detail.DetailViewModel
 import com.example.githubuser.ui.favourite.FavouriteViewModel
@@ -12,7 +12,7 @@ import com.example.githubuser.ui.home.HomeViewModel
 import com.example.githubuser.ui.main.MainViewModel
 
 
-class ViewModelFactory(private val userRepository: Repository) :
+class ViewModelFactory(private val userRepository: UserRepository) :
     ViewModelProvider.NewInstanceFactory(){
 
     @Suppress("UNCHECKED_CAST")

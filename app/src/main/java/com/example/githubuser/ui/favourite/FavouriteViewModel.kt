@@ -2,10 +2,10 @@ package com.example.githubuser.ui.favourite
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.example.githubuser.data.Repository
+import com.example.githubuser.data.repository.UserRepository
 
 class FavouriteViewModel(
-    private val userRepository: Repository
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     fun getFavouriteList() = userRepository.getBookmarkedUser().asLiveData()
