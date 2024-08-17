@@ -1,7 +1,5 @@
 package com.example.githubuser.ui.home
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,7 +29,6 @@ class HomeViewModel(
     }
 
     fun getUserList():LiveData<Resource<List<User>>>{
-        Log.d(TAG, "Terpanggil with query ${_query.value}")
         return userRepository.getUserList(query.value).asLiveData()
     }
 
