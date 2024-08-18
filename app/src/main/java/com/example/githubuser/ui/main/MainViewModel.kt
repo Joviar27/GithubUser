@@ -5,10 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.githubuser.data.repository.UserRepository
+import com.example.githubuser.domain.usecase.ThemeUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(
-    private val userRepository: UserRepository
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val themeUseCase: ThemeUseCase
 ): ViewModel() {
 
     private val _darkMode = MutableLiveData<Boolean>()
@@ -20,7 +24,7 @@ class MainViewModel(
 
     private fun updateThemeSetting(){
         viewModelScope.launch {
-            userRepository.getThemeSetting().collect{
+            themeUseCase.getThemeSetting().collect{
                 _darkMode.value = it
             }
         }

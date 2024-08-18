@@ -1,32 +1,27 @@
 package com.example.githubuser.data.repository
 
-import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.room.withTransaction
 import com.example.githubuser.data.Resource
 import com.example.githubuser.data.local.entity.mapToDomain
-import com.example.githubuser.data.local.preference.ThemePreference
 import com.example.githubuser.data.local.room.UserDatabase
-import com.example.githubuser.data.remote.response.mapToBookmarkEntity
 import com.example.githubuser.data.remote.response.mapToEntity
 import com.example.githubuser.data.remote.response.mapToFollowerEntity
 import com.example.githubuser.data.remote.response.mapToFollowingEntity
 import com.example.githubuser.data.remote.retrofit.ApiService
 import com.example.githubuser.domain.model.User
-import com.example.githubuser.domain.model.mapToBookmarkEntity
 import com.example.githubuser.domain.repository.IUserRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository constructor(
+@Singleton
+class UserRepository @Inject constructor(
     private val apiService: ApiService,
     private val userDatabase: UserDatabase,
-    private val themePreference: ThemePreference
 ): IUserRepository{
     override fun getUserList(searchQuery: String?) : Flow<Resource<List<User>>> = flow{
         emit(Resource.Loading)
@@ -136,19 +131,5 @@ class UserRepository constructor(
             }
             emitAll(localData)
         }
-    }
-
-    companion object{
-        @Volatile
-        private var instance : UserRepository? = null
-
-        fun getInstance(
-            apiService:ApiService,
-            userDatabase: UserDatabase,
-            themePreference: ThemePreference
-        ) : UserRepository =
-            instance ?: synchronized(this){
-                instance ?: UserRepository(apiService, userDatabase, themePreference)
-            }.also { instance =it }
     }
 }

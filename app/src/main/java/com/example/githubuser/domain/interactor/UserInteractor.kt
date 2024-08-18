@@ -3,11 +3,13 @@ package com.example.githubuser.domain.interactor
 import com.example.githubuser.data.repository.UserRepository
 import com.example.githubuser.data.Resource
 import com.example.githubuser.domain.model.User
+import com.example.githubuser.domain.repository.IUserRepository
 import com.example.githubuser.domain.usecase.UserUseCase
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class UserInteractor constructor(
-    private val userRepository: UserRepository
+class UserInteractor @Inject constructor(
+    private val userRepository: IUserRepository
 ): UserUseCase{
 
     override fun getUserList(searchQuery: String?): Flow<Resource<List<User>>> {

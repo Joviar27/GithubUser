@@ -29,12 +29,5 @@ class ThemePreference(context: Context) {
     companion object{
         private const val PREFS_KEY = "theme_prefs"
         private val THEME_KEY = booleanPreferencesKey("themes_setting")
-
-        @Volatile
-        private var instance: ThemePreference? = null
-        fun getInstance(context: Context): ThemePreference =
-            instance ?: synchronized(this) {
-                instance ?: ThemePreference(context.applicationContext)
-            }.also { instance = it }
     }
 }

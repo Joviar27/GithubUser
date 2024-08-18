@@ -5,14 +5,15 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatDelegate
 import com.example.githubuser.databinding.ActivityMainBinding
-import com.example.githubuser.ui.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private var _binding : ActivityMainBinding? = null
     private val binding get() = _binding
 
-    private lateinit var viewModel: MainViewModel
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,19 +24,9 @@ class MainActivity : AppCompatActivity() {
         binding?.toolbar?.popupTheme
         setSupportActionBar(binding?.toolbar)
 
-        viewModel = obtainViewModel()
-
-        viewModel.darkMode.observe(this){
+        mainViewModel.darkMode.observe(this){
             if(it)AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             else AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
         }
-    }
-
-    private fun obtainViewModel() : MainViewModel {
-        val factory : ViewModelFactory = ViewModelFactory.getInstance(this)
-        val viewModel : MainViewModel by viewModels {
-            factory
-        }
-        return viewModel
     }
 }

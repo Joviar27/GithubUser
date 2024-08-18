@@ -5,11 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.example.githubuser.data.Resource
-import com.example.githubuser.data.repository.UserRepository
 import com.example.githubuser.domain.model.User
+import com.example.githubuser.domain.usecase.BookmarkedUseCase
+import com.example.githubuser.domain.usecase.ThemeUseCase
+import com.example.githubuser.domain.usecase.UserUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class HomeViewModel(
-    private val userRepository: UserRepository
+@HiltViewModel
+class HomeViewModel @Inject constructor(
+    private val userUseCase: UserUseCase,
+    private val bookmarkedUseCase: BookmarkedUseCase,
+    private val themeUseCase: ThemeUseCase
 ):ViewModel(){
 
     private val _query = MutableLiveData<String?>()
@@ -20,14 +27,14 @@ class HomeViewModel(
     }
 
     fun getUserList():LiveData<Resource<List<User>>>{
-        return userRepository.getUserList(query.value).asLiveData()
+        return userUseCase.getUserList(query.value).asLiveData()
     }
 
-    fun setBookmarkedUser(user : User) = userRepository.setBookmarkedUser(user).asLiveData()
+    fun setBookmarkedUser(user : User) = bookmarkedUseCase.setBookmarkedUser(user).asLiveData()
 
-    fun deleteBookmarkedUser(id : Int) = userRepository.deleteBookmarkedUser(id).asLiveData()
+    fun deleteBookmarkedUser(id : Int) = bookmarkedUseCase.deleteBookmarkedUser(id).asLiveData()
 
-    fun getThemeSetting() = userRepository.getThemeSetting().asLiveData()
+    fun getThemeSetting() = themeUseCase.getThemeSetting().asLiveData()
 
-    fun switchThemeSetting() = userRepository.switchThemeSetting().asLiveData()
+    fun switchThemeSetting() = themeUseCase.switchThemeSetting().asLiveData()
 }

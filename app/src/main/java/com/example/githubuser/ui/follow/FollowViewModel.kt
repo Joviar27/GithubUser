@@ -5,9 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import com.example.githubuser.data.repository.UserRepository
+import com.example.githubuser.domain.usecase.UserUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class FollowViewModel(
-    private val userRepository: UserRepository
+@HiltViewModel
+class FollowViewModel @Inject constructor(
+    private val userUseCase: UserUseCase
 ) : ViewModel(){
 
     private val _userName = MutableLiveData<String>()
@@ -19,10 +23,10 @@ class FollowViewModel(
     fun getUserList() =
         when(type.value ?: TabType.FOLLOWER){
             TabType.FOLLOWER-> {
-                userRepository.getFollower(userName.value ?: "").asLiveData()
+                userUseCase.getFollower(userName.value ?: "").asLiveData()
             }
             TabType.FOLLOWING ->{
-                userRepository.getFollowing(userName.value ?: "").asLiveData()
+                userUseCase.getFollowing(userName.value ?: "").asLiveData()
             }
         }
 

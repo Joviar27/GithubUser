@@ -10,8 +10,11 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ThemeRepository(
+@Singleton
+class ThemeRepository @Inject constructor(
     private val themePreference: ThemePreference
 ): IThemeRepository {
 

@@ -2,11 +2,13 @@ package com.example.githubuser.domain.interactor
 
 import com.example.githubuser.data.Resource
 import com.example.githubuser.data.repository.ThemeRepository
+import com.example.githubuser.domain.repository.IThemeRepository
 import com.example.githubuser.domain.usecase.ThemeUseCase
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class ThemeInteractor constructor(
-    private val themeRepository: ThemeRepository
+class ThemeInteractor @Inject constructor(
+    private val themeRepository: IThemeRepository
 ): ThemeUseCase {
 
     override fun getThemeSetting(): Flow<Boolean> {

@@ -1,12 +1,9 @@
 package com.example.githubuser.ui.favourite
 
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
@@ -22,25 +19,15 @@ import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.ListType
 import com.example.githubuser.ui.component.UserAdapter
-import com.example.githubuser.ui.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewModel>(
     FragmentUserlistBinding::inflate
 ), MenuProvider {
 
-    //override val viewModel: FavouriteViewModel by lazy { obtainViewModel() }
-    private lateinit var viewModel: FavouriteViewModel
-
+    private val favouriteViewModel: FavouriteViewModel by viewModels()
     private val userAdapter by lazy { UserAdapter(ListType.USER) }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewModel = obtainViewModel()
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
 
     override fun FragmentUserlistBinding.initialize() {
         val menuHost: MenuHost = requireActivity()
@@ -65,7 +52,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
             findNavController().navigate(toDetailUser)
         }
         userAdapter.onBookmarkClicked = {
-            viewModel.deleteBookmarkedUser(it.id).observe(viewLifecycleOwner) { result ->
+            favouriteViewModel.deleteBookmarkedUser(it.id).observe(viewLifecycleOwner) { result ->
                 when (result) {
                     is Resource.Loading -> Unit
                     is Resource.Success -> Toast.makeText(
@@ -85,7 +72,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     }
 
     override fun observeData() {
-        viewModel.getFavouriteList().observe(viewLifecycleOwner){ result ->
+        favouriteViewModel.getFavouriteList().observe(viewLifecycleOwner){ result ->
             when(result){
                 is Resource.Loading -> showLoading(true)
                 is Resource.Error -> {
@@ -104,15 +91,6 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
         }
     }
 
-    private fun obtainViewModel() : FavouriteViewModel {
-        val factory : ViewModelFactory =
-            ViewModelFactory.getInstance(requireActivity())
-        val viewModel : FavouriteViewModel by viewModels {
-            factory
-        }
-        return viewModel
-    }
-
     private fun showLoading(isLoading : Boolean){
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
@@ -120,7 +98,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_favourite,menu)
 
-        viewModel.getThemeSetting().observe(viewLifecycleOwner){
+        favouriteViewModel.getThemeSetting().observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -139,9 +117,8 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-        val viewModel = obtainViewModel()
         when (menuItem.itemId){
-            R.id.theme -> viewModel.switchThemeSetting()
+            R.id.theme -> favouriteViewModel.switchThemeSetting()
             android.R.id.home -> findNavController().navigateUp()
         }
         return true

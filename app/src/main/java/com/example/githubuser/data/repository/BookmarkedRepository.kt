@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.room.withTransaction
 import com.example.githubuser.data.Resource
 import com.example.githubuser.data.local.entity.mapToDomain
-import com.example.githubuser.data.local.preference.ThemePreference
 import com.example.githubuser.data.local.room.UserDatabase
 import com.example.githubuser.data.remote.response.mapToBookmarkEntity
 import com.example.githubuser.data.remote.retrofit.ApiService
@@ -15,8 +14,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class BookmarkedRepository(
+@Singleton
+class BookmarkedRepository @Inject constructor(
     private val apiService: ApiService,
     private val userDatabase: UserDatabase,
 ): IBookmarkedRepository {

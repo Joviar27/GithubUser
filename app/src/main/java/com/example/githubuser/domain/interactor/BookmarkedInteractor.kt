@@ -3,11 +3,13 @@ package com.example.githubuser.domain.interactor
 import com.example.githubuser.data.Resource
 import com.example.githubuser.data.repository.BookmarkedRepository
 import com.example.githubuser.domain.model.User
+import com.example.githubuser.domain.repository.IBookmarkedRepository
 import com.example.githubuser.domain.usecase.BookmarkedUseCase
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
-class BookmarkedInteractor constructor(
-    private val bookmarkedRepository: BookmarkedRepository
+class BookmarkedInteractor @Inject constructor(
+    private val bookmarkedRepository: IBookmarkedRepository
 ): BookmarkedUseCase {
     override fun getBookmarkedDetailUser(name: String): Flow<Resource<User>> {
         return bookmarkedRepository.getBookmarkedDetailUser(name)

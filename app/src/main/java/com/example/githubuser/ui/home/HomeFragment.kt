@@ -2,13 +2,10 @@ package com.example.githubuser.ui.home
 
 import android.app.SearchManager
 import android.content.Context
-import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -26,28 +23,19 @@ import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.ListType
 import com.example.githubuser.ui.component.UserAdapter
-import com.example.githubuser.ui.ViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     FragmentUserlistBinding::inflate
 ), MenuProvider {
 
-//    override val viewModel: HomeViewModel by lazy { obtainViewModel() }
-    private lateinit var viewModel: HomeViewModel
+    private val homeViewModel: HomeViewModel by viewModels()
 
     private val userAdapter by lazy { UserAdapter(ListType.USER) }
     private val menuHost: MenuHost by lazy { requireActivity() }
     private val searchManager by lazy {
         requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewModel = obtainViewModel()
-        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun FragmentUserlistBinding.initialize() {
@@ -65,7 +53,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
         }
         userAdapter.onBookmarkClicked = {
             if (it.isBookmarked==true) {
-                viewModel.deleteBookmarkedUser(it.id).observe(viewLifecycleOwner){result ->
+                homeViewModel.deleteBookmarkedUser(it.id).observe(viewLifecycleOwner){result ->
                     when(result){
                         is Resource.Loading -> Unit
                         is Resource.Success -> Toast.makeText(
@@ -81,7 +69,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
                     }
                 }
             } else {
-                viewModel.setBookmarkedUser(it).observe(viewLifecycleOwner){result ->
+                homeViewModel.setBookmarkedUser(it).observe(viewLifecycleOwner){result ->
                     when(result){
                         is Resource.Loading -> Unit
                         is Resource.Success -> Toast.makeText(
@@ -107,8 +95,8 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     }
 
     override fun observeData() {
-        viewModel.query.observe(viewLifecycleOwner){
-            viewModel.getUserList().observe(viewLifecycleOwner){ result ->
+        homeViewModel.query.observe(viewLifecycleOwner){
+            homeViewModel.getUserList().observe(viewLifecycleOwner){ result ->
                 when(result){
                     is Resource.Loading ->{
                         showLoading(true)
@@ -129,13 +117,13 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
                 }
             }
         }
-        viewModel.updateQuery(null)
+        homeViewModel.updateQuery(null)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_main,menu)
 
-        viewModel.getThemeSetting().observe(viewLifecycleOwner){
+        homeViewModel.getThemeSetting().observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -158,12 +146,12 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.updateQuery(query)
+                homeViewModel.updateQuery(query)
                 searchView.clearFocus()
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
-                viewModel.updateQuery(newText)
+                homeViewModel.updateQuery(newText)
                 return false
             }
         })
@@ -177,7 +165,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
                 view?.findNavController()?.navigate(toFavourite)
             }
             R.id.theme ->{
-                viewModel.switchThemeSetting().observe(viewLifecycleOwner){
+                homeViewModel.switchThemeSetting().observe(viewLifecycleOwner){
                     if(it is Resource.Error) {
                         Toast.makeText(
                             requireContext(),
@@ -189,15 +177,6 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
             }
         }
         return true
-    }
-
-    private fun obtainViewModel() : HomeViewModel {
-        val factory : ViewModelFactory =
-            ViewModelFactory.getInstance(requireActivity())
-        val viewModel : HomeViewModel by viewModels {
-            factory
-        }
-        return viewModel
     }
 
     private fun showLoading(isLoading : Boolean){

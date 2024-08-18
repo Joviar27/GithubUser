@@ -3,12 +3,10 @@ package com.example.githubuser.ui.detail
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
@@ -26,30 +24,21 @@ import com.example.githubuser.databinding.FragmentDetailBinding
 import com.example.githubuser.domain.model.User
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.SectionPagerAdapter
-import com.example.githubuser.ui.ViewModelFactory
 import com.example.githubuser.ui.follow.TabType
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     FragmentDetailBinding::inflate
 ), MenuProvider {
 
-    //override val viewModel: DetailViewModel by lazy { obtainViewModel() }
-    private lateinit var viewModel: DetailViewModel
+    private val detailViewModel: DetailViewModel by viewModels()
 
     private val menuHost: MenuHost by lazy { requireActivity() }
     private val sectionPagerAdapter by lazy { SectionPagerAdapter(requireActivity()) }
 
     private lateinit var user: User
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        viewModel = obtainViewModel()
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
 
     override fun FragmentDetailBinding.initialize() {
         menuHost.addMenuProvider(this@DetailFragment, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -62,11 +51,11 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     }
 
     override fun observeData() {
-        //user = DetailFragmentArgs.fromBundle(arguments as Bundle).user
-        //viewModel.updateUserName(user.login)
+        user = DetailFragmentArgs.fromBundle(arguments as Bundle).user
+        detailViewModel.updateUserName(user.login)
 
         if (user.isBookmarked==true) {
-            viewModel.getFavouriteDetailUser().observe(viewLifecycleOwner){ result ->
+            detailViewModel.getFavouriteDetailUser().observe(viewLifecycleOwner){ result ->
                 when(result){
                     is Resource.Loading ->{
                         showLoading(true)
@@ -87,7 +76,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                 }
             }
         } else{
-            viewModel.getDetailUser().observe(viewLifecycleOwner){ result ->
+            detailViewModel.getDetailUser().observe(viewLifecycleOwner){ result ->
                 when(result){
                     is Resource.Loading ->{
                         showLoading(true)
@@ -147,19 +136,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
         sectionPagerAdapter.user = name
     }
 
-    private fun obtainViewModel() : DetailViewModel {
-        val factory : ViewModelFactory =
-            ViewModelFactory.getInstance(requireActivity())
-        val viewModel : DetailViewModel by viewModels {
-            factory
-        }
-        return viewModel
-    }
-
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_detail,menu)
 
-        viewModel.getThemeSetting().observe(viewLifecycleOwner){
+        detailViewModel.getThemeSetting().observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -194,7 +174,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
             }
             R.id.update_favourite ->{
                 if (user.isBookmarked==true) {
-                    viewModel.deleteBookmarkedUser(user.id).observe(viewLifecycleOwner){result ->
+                    detailViewModel.deleteBookmarkedUser(user.id).observe(viewLifecycleOwner){result ->
                         when(result){
                             is Resource.Loading -> Unit
                             is Resource.Success -> Toast.makeText(
@@ -210,7 +190,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                         }
                     }
                 } else {
-                    viewModel.setBookmarkedUser(user).observe(viewLifecycleOwner){result ->
+                    detailViewModel.setBookmarkedUser(user).observe(viewLifecycleOwner){result ->
                         when(result){
                             is Resource.Loading -> Unit
                             is Resource.Success -> Toast.makeText(
@@ -227,7 +207,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                     }
                 }
             }
-            R.id.theme -> viewModel.switchThemeSetting().observe(viewLifecycleOwner){
+            R.id.theme -> detailViewModel.switchThemeSetting().observe(viewLifecycleOwner){
                 if(it is Resource.Error) {
                     Toast.makeText(
                         requireContext(),
