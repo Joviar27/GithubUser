@@ -28,16 +28,19 @@ class HomeViewModel @Inject constructor(
     private val _darkMode = MutableLiveData<Boolean>()
     val darkMode : LiveData<Boolean> get() = _darkMode
 
+    private val _userList = MutableLiveData<Resource<List<User>>>()
+    val userList : LiveData<Resource<List<User>>> get() = _userList
+
     init {
         getThemeSetting()
+        getUserList(null)
     }
 
-    fun updateQuery(query: String?){
-        _query.value = query
-    }
-
-    fun getUserList():LiveData<Resource<List<User>>>{
-        return userUseCase.getUserList(query.value).asLiveData()
+    fun getUserList(query: String?){
+        userUseCase.getUserList(query)
+            .onEach {
+                _userList.value = it
+            }.launchIn(viewModelScope)
     }
 
     fun setBookmarkedUser(user : User) = bookmarkedUseCase.setBookmarkedUser(user).asLiveData()

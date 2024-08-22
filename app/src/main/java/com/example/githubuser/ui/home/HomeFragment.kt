@@ -88,7 +88,6 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
                 }
             }
         }
-
         binding.rvUser.apply {
             layoutManager = LinearLayoutManager(requireActivity())
             setHasFixedSize(true)
@@ -97,29 +96,24 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     }
 
     override fun observeData() {
-        homeViewModel.query.observe(viewLifecycleOwner){
-            homeViewModel.getUserList().observe(viewLifecycleOwner){ result ->
-                when(result){
-                    is Resource.Loading ->{
-                        showLoading(true)
-                    }
-                    is Resource.Success ->{
-                        showLoading(false)
-                        val userData = result.data
-                        userAdapter.submitList(userData)
-                    }
-                    is Resource.Error ->{
-                        showLoading(false)
-                        Toast.makeText(
-                            context,
-                            "Something wrong ${result.error}",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+        homeViewModel.userList.observe(viewLifecycleOwner){ result ->
+            when(result){
+                is Resource.Loading ->{
+                    showLoading(true)
+                }
+                is Resource.Success ->{
+                    showLoading(false)
+                    val userData = result.data
+                    userAdapter.submitList(userData)
+                }
+                is Resource.Error ->{
+                    showLoading(false)
+                    requireActivity().showToast(
+                        getString(R.string.error_general, result.error)
+                    )
                 }
             }
         }
-        homeViewModel.updateQuery(null)
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
@@ -148,12 +142,12 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                homeViewModel.updateQuery(query)
+                homeViewModel.getUserList(query)
                 searchView.clearFocus()
                 return true
             }
             override fun onQueryTextChange(newText: String?): Boolean {
-                homeViewModel.updateQuery(newText)
+                homeViewModel.getUserList(newText)
                 return false
             }
         })
