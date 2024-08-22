@@ -19,6 +19,8 @@ import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.ListType
 import com.example.githubuser.ui.component.UserAdapter
+import com.example.githubuser.ui.main.MainActivity
+import com.example.githubuser.ui.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -98,7 +100,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_favourite,menu)
 
-        favouriteViewModel.getThemeSetting().observe(viewLifecycleOwner){
+        favouriteViewModel.darkMode.observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -118,7 +120,22 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when (menuItem.itemId){
-            R.id.theme -> favouriteViewModel.switchThemeSetting()
+            R.id.theme -> {
+                favouriteViewModel.switchThemeSetting().observe(this){
+                    when(it){
+                        is Resource.Error -> requireActivity().showToast(
+                            getString(R.string.error_theme)
+                        )
+                        is Resource.Success ->{
+                            favouriteViewModel.getThemeSetting()
+                            if(requireActivity() is MainActivity){
+                                (requireActivity() as MainActivity).updateThemeSetting()
+                            }
+                        }
+                        else -> Unit
+                    }
+                }
+            }
             android.R.id.home -> findNavController().navigateUp()
         }
         return true

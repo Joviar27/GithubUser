@@ -23,6 +23,8 @@ import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.ListType
 import com.example.githubuser.ui.component.UserAdapter
+import com.example.githubuser.ui.main.MainActivity
+import com.example.githubuser.ui.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -123,7 +125,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_main,menu)
 
-        homeViewModel.getThemeSetting().observe(viewLifecycleOwner){
+        homeViewModel.darkMode.observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -166,12 +168,17 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
             }
             R.id.theme ->{
                 homeViewModel.switchThemeSetting().observe(viewLifecycleOwner){
-                    if(it is Resource.Error) {
-                        Toast.makeText(
-                            requireContext(),
-                            "Failed to update theme",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    when(it){
+                        is Resource.Error -> requireActivity().showToast(
+                            getString(R.string.error_theme)
+                        )
+                        is Resource.Success ->{
+                            homeViewModel.getThemeSetting()
+                            if(requireActivity() is MainActivity){
+                                (requireActivity() as MainActivity).updateThemeSetting()
+                            }
+                        }
+                        else -> Unit
                     }
                 }
             }

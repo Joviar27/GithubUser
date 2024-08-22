@@ -15,4 +15,7 @@
     <string name="add_to_favourite">Add to Favourite</string>
     <string name="remove_from_favourite">Remove from Favourite</string>
     <string name="theme">theme</string>
+
+    <!-- Error -->
+    <string name="error_theme">Failed to Update Theme</string>
 </resources>

@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.githubuser.data.repository.UserRepository
 import com.example.githubuser.domain.usecase.ThemeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,11 +24,10 @@ class MainViewModel @Inject constructor(
         updateThemeSetting()
     }
 
-    private fun updateThemeSetting(){
-        viewModelScope.launch {
-            themeUseCase.getThemeSetting().collect{
+    fun updateThemeSetting(){
+        themeUseCase.getThemeSetting()
+            .onEach{
                 _darkMode.value = it
-            }
-        }
+            }.launchIn(viewModelScope)
     }
 }

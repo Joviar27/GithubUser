@@ -2,7 +2,6 @@ package com.example.githubuser.ui.detail
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -25,6 +24,8 @@ import com.example.githubuser.domain.model.User
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.SectionPagerAdapter
 import com.example.githubuser.ui.follow.TabType
+import com.example.githubuser.ui.main.MainActivity
+import com.example.githubuser.ui.utils.showToast
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -139,7 +140,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
         menuInflater.inflate(R.menu.menu_detail,menu)
 
-        detailViewModel.getThemeSetting().observe(viewLifecycleOwner){
+        detailViewModel.darkMode.observe(viewLifecycleOwner){
             if(it){
                 menu.findItem(R.id.theme).icon = ResourcesCompat.getDrawable(
                     resources,
@@ -208,17 +209,21 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                 }
             }
             R.id.theme -> detailViewModel.switchThemeSetting().observe(viewLifecycleOwner){
-                if(it is Resource.Error) {
-                    Toast.makeText(
-                        requireContext(),
-                        "Failed to update theme",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                when(it){
+                    is Resource.Error -> requireActivity().showToast(
+                        getString(R.string.error_theme)
+                    )
+                    is Resource.Success ->{
+                        detailViewModel.getThemeSetting()
+                        if(requireActivity() is MainActivity){
+                            (requireActivity() as MainActivity).updateThemeSetting()
+                        }
+                    }
+                    else -> Unit
                 }
             }
             android.R.id.home -> {
-                Log.d("UserRepo", "Habis pencet back kok masih get detail user")
-                findNavController().navigateUp()
+                findNavController().popBackStack()
             }
         }
         return true
