@@ -17,12 +17,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.core.data.Resource
 import com.example.githubuser.R
-import com.example.githubuser.data.Resource
 import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
-import com.example.githubuser.ui.component.ListType
-import com.example.githubuser.ui.component.UserAdapter
+import com.example.core.ui.ListType
+import com.example.core.ui.UserAdapter
 import com.example.githubuser.ui.main.MainActivity
 import com.example.githubuser.ui.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,6 +39,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     private val searchManager by lazy {
         requireActivity().getSystemService(Context.SEARCH_SERVICE) as SearchManager
     }
+    private lateinit var searchView: SearchView
 
     override fun FragmentUserlistBinding.initialize() {
         menuHost.addMenuProvider( this@HomeFragment, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -136,7 +137,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
             }
         }
 
-        val searchView = menu.findItem(R.id.search).actionView as SearchView
+        searchView = menu.findItem(R.id.search).actionView as SearchView
         searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().componentName))
         searchView.queryHint = resources.getString(R.string.search_hint)
 
@@ -151,6 +152,13 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
                 return false
             }
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if(::searchView.isInitialized){
+            searchView.setOnQueryTextListener(null)
+        }
     }
 
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {

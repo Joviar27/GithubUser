@@ -1,16 +1,14 @@
 package com.example.githubuser.ui.follow
 
-import android.content.ContentValues
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.githubuser.data.Resource
+import com.example.core.data.Resource
 import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
-import com.example.githubuser.ui.component.ListType
-import com.example.githubuser.ui.component.UserAdapter
+import com.example.core.ui.ListType
+import com.example.core.ui.UserAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -21,6 +19,14 @@ class FollowFragment : BaseFragment<FragmentUserlistBinding, FollowViewModel>(
     private val followViewModel: FollowViewModel by viewModels()
     private val followAdapter by lazy { UserAdapter(ListType.FOLLOW) }
 
+    private val type by lazy {
+        arguments?.getInt(EXTRA_TYPE, 0 )
+    }
+
+    private val name by lazy {
+        arguments?.getString(EXTRA_NAME)
+    }
+
     override fun FragmentUserlistBinding.initialize() {
         binding.rvUser.apply {
             layoutManager = LinearLayoutManager(requireActivity())
@@ -30,11 +36,6 @@ class FollowFragment : BaseFragment<FragmentUserlistBinding, FollowViewModel>(
     }
 
     override fun observeData() {
-        val type = arguments?.getInt(EXTRA_TYPE, 0 )
-        val name = arguments?.getString(EXTRA_NAME)
-
-        Log.d(ContentValues.TAG, "Follow fragment : Type $type, Name $name")
-
         followViewModel.updateUserName(name ?: "")
         followViewModel.updateTabType(when(type){
             TabType.FOLLOWING.position -> TabType.FOLLOWING

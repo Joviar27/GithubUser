@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.githubuser.data.Resource
-import com.example.githubuser.domain.model.User
-import com.example.githubuser.domain.usecase.BookmarkedUseCase
-import com.example.githubuser.domain.usecase.ThemeUseCase
-import com.example.githubuser.domain.usecase.UserUseCase
+import com.example.core.data.Resource
+import com.example.core.domain.model.User
+import com.example.core.domain.usecase.BookmarkedUseCase
+import com.example.core.domain.usecase.ThemeUseCase
+import com.example.core.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach

@@ -1,11 +1,11 @@
 package com.example.githubuser.di
 
-import com.example.githubuser.domain.interactor.BookmarkedInteractor
-import com.example.githubuser.domain.interactor.ThemeInteractor
-import com.example.githubuser.domain.interactor.UserInteractor
-import com.example.githubuser.domain.usecase.BookmarkedUseCase
-import com.example.githubuser.domain.usecase.ThemeUseCase
-import com.example.githubuser.domain.usecase.UserUseCase
+import com.example.core.domain.interactor.BookmarkedInteractor
+import com.example.core.domain.interactor.ThemeInteractor
+import com.example.core.domain.interactor.UserInteractor
+import com.example.core.domain.usecase.BookmarkedUseCase
+import com.example.core.domain.usecase.ThemeUseCase
+import com.example.core.domain.usecase.UserUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

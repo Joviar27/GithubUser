@@ -14,11 +14,10 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubuser.R
-import com.example.githubuser.data.Resource
 import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
-import com.example.githubuser.ui.component.ListType
-import com.example.githubuser.ui.component.UserAdapter
+import com.example.core.ui.ListType
+import com.example.core.ui.UserAdapter
 import com.example.githubuser.ui.main.MainActivity
 import com.example.githubuser.ui.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -56,14 +55,14 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
         userAdapter.onBookmarkClicked = {
             favouriteViewModel.deleteBookmarkedUser(it.id).observe(viewLifecycleOwner) { result ->
                 when (result) {
-                    is Resource.Loading -> Unit
-                    is Resource.Success -> Toast.makeText(
+                    is com.example.core.data.Resource.Loading -> Unit
+                    is com.example.core.data.Resource.Success -> Toast.makeText(
                         requireContext(),
                         "Removed from favourite",
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    is Resource.Error -> Toast.makeText(
+                    is com.example.core.data.Resource.Error -> Toast.makeText(
                         requireContext(),
                         "Something Wrong ${result.error}",
                         Toast.LENGTH_SHORT
@@ -76,8 +75,8 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     override fun observeData() {
         favouriteViewModel.getFavouriteList().observe(viewLifecycleOwner){ result ->
             when(result){
-                is Resource.Loading -> showLoading(true)
-                is Resource.Error -> {
+                is com.example.core.data.Resource.Loading -> showLoading(true)
+                is com.example.core.data.Resource.Error -> {
                     showLoading(false)
                     Toast.makeText(
                         requireContext(),
@@ -85,7 +84,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                is Resource.Success ->{
+                is com.example.core.data.Resource.Success ->{
                     showLoading(false)
                     userAdapter.submitList(result.data)
                 }
@@ -123,10 +122,10 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
             R.id.theme -> {
                 favouriteViewModel.switchThemeSetting().observe(this){
                     when(it){
-                        is Resource.Error -> requireActivity().showToast(
+                        is com.example.core.data.Resource.Error -> requireActivity().showToast(
                             getString(R.string.error_theme)
                         )
-                        is Resource.Success ->{
+                        is com.example.core.data.Resource.Success ->{
                             favouriteViewModel.getThemeSetting()
                             if(requireActivity() is MainActivity){
                                 (requireActivity() as MainActivity).updateThemeSetting()

@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
-import com.example.githubuser.data.repository.UserRepository
-import com.example.githubuser.domain.usecase.UserUseCase
+import com.example.core.data.repository.UserRepository
+import com.example.core.domain.usecase.UserUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

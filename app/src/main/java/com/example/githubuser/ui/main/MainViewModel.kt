@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.githubuser.data.repository.UserRepository
-import com.example.githubuser.domain.usecase.ThemeUseCase
+import com.example.core.data.repository.UserRepository
+import com.example.core.domain.usecase.ThemeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val themeUseCase: ThemeUseCase
+    private val themeUseCase: com.example.core.domain.usecase.ThemeUseCase
 ): ViewModel() {
 
     private val _darkMode = MutableLiveData<Boolean>()

@@ -18,9 +18,9 @@ import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.example.githubuser.R
-import com.example.githubuser.data.Resource
+import com.example.core.data.Resource
 import com.example.githubuser.databinding.FragmentDetailBinding
-import com.example.githubuser.domain.model.User
+import com.example.core.domain.model.User
 import com.example.githubuser.ui.BaseFragment
 import com.example.githubuser.ui.component.SectionPagerAdapter
 import com.example.githubuser.ui.follow.TabType
@@ -39,7 +39,9 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     private val menuHost: MenuHost by lazy { requireActivity() }
     private val sectionPagerAdapter by lazy { SectionPagerAdapter(requireActivity()) }
 
-    private lateinit var user: User
+    private val user by lazy {
+        DetailFragmentArgs.fromBundle(arguments as Bundle).user
+    }
 
     override fun FragmentDetailBinding.initialize() {
         menuHost.addMenuProvider(this@DetailFragment, viewLifecycleOwner, Lifecycle.State.RESUMED)
@@ -52,7 +54,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     }
 
     override fun observeData() {
-        user = DetailFragmentArgs.fromBundle(arguments as Bundle).user
         detailViewModel.updateUserName(user.login)
 
         if (user.isBookmarked==true) {
@@ -64,7 +65,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                     is Resource.Success ->{
                         showLoading(false)
                         bind(result.data)
-                        user = result.data
                     }
                     is Resource.Error ->{
                         showLoading(false)
@@ -85,7 +85,6 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                     is Resource.Success ->{
                         showLoading(false)
                         bind(result.data)
-                        user = result.data
                     }
                     is Resource.Error ->{
                         showLoading(false)
@@ -115,10 +114,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(binding.ivProfile)
 
-        showTab(user.followers ?: 0, user.following ?: 0, user.login)
+        showTab(user.followers ?: 0, user.following ?: 0)
     }
 
-    private fun showTab(followers : Int, following : Int, name: String){
+    private fun showTab(followers : Int, following : Int){
         binding.viewPager.adapter = sectionPagerAdapter
 
         TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
@@ -134,7 +133,7 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                 }
             }
         }.attach()
-        sectionPagerAdapter.user = name
+        sectionPagerAdapter.user = user.login
     }
 
     override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {

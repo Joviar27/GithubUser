@@ -25,7 +25,7 @@
         tools:layout="@layout/fragment_detail" >
         <argument
             android:name="user"
-            app:argType="com.example.githubuser.domain.model.User"/>
+            app:argType="com.example.core.domain.model.User"/>
     </fragment>
     <fragment
         android:id="@+id/favouriteFragment"
