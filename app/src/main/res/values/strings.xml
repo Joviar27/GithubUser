@@ -18,4 +18,5 @@
     <!-- Error -->
     <string name="error_theme">Failed to Update Theme</string>
     <string name="error_general">Something wrong: %s</string>
+    <string name="title_favorite">Favorite</string>
 </resources>
