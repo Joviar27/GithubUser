@@ -1,4 +1,4 @@
-package com.example.githubuser.ui.favourite
+package com.example.githubuserapp.favorite.ui
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

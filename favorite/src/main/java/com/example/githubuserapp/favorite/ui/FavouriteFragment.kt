@@ -1,5 +1,6 @@
-package com.example.githubuser.ui.favourite
+package com.example.githubuserapp.favorite.ui
 
+import android.content.Context
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -7,28 +8,56 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavDeepLinkRequest
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.core.data.Resource
 import com.example.githubuser.R
 import com.example.githubuser.databinding.FragmentUserlistBinding
 import com.example.githubuser.ui.BaseFragment
 import com.example.core.ui.ListType
 import com.example.core.ui.UserAdapter
+import com.example.githubuser.di.FavoriteModuleDependencies
 import com.example.githubuser.ui.main.MainActivity
 import com.example.githubuser.ui.utils.showToast
-import dagger.hilt.android.AndroidEntryPoint
+import com.example.githubuserapp.favorite.ViewModelFactory
+import com.example.githubuserapp.favorite.di.DaggerFavoriteComponent
+import dagger.hilt.android.EntryPointAccessors
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewModel>(
     FragmentUserlistBinding::inflate
 ), MenuProvider {
 
-    private val favouriteViewModel: FavouriteViewModel by viewModels()
+    @Inject
+    lateinit var factory: ViewModelFactory
+
+    private val favouriteViewModel: FavouriteViewModel by viewModels{
+        factory
+    }
+
     private val userAdapter by lazy { UserAdapter(ListType.USER) }
+
+    private fun inject(){
+        DaggerFavoriteComponent.builder()
+            .context(requireContext())
+            .appDependencies(EntryPointAccessors.fromApplication(
+                requireActivity().applicationContext,
+                FavoriteModuleDependencies::class.java
+            ))
+            .build()
+            .inject(this)
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        inject()
+    }
 
     override fun FragmentUserlistBinding.initialize() {
         val menuHost: MenuHost = requireActivity()
@@ -47,22 +76,22 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
         }
 
         userAdapter.onItemClicked = {
-            val toDetailUser =
-                FavouriteFragmentDirections.actionFavouriteFragmentToDetailFragment(it)
-            toDetailUser.user = it
-            findNavController().navigate(toDetailUser)
+            val request = NavDeepLinkRequest.Builder
+                .fromUri("android-app://com.example.githubuser/fragment_detail/${it.id}/${it.login}/true".toUri())
+                .build()
+            findNavController().navigate(request)
         }
         userAdapter.onBookmarkClicked = {
             favouriteViewModel.deleteBookmarkedUser(it.id).observe(viewLifecycleOwner) { result ->
                 when (result) {
-                    is com.example.core.data.Resource.Loading -> Unit
-                    is com.example.core.data.Resource.Success -> Toast.makeText(
+                    is Resource.Loading -> Unit
+                    is Resource.Success -> Toast.makeText(
                         requireContext(),
                         "Removed from favourite",
                         Toast.LENGTH_SHORT
                     ).show()
 
-                    is com.example.core.data.Resource.Error -> Toast.makeText(
+                    is Resource.Error -> Toast.makeText(
                         requireContext(),
                         "Something Wrong ${result.error}",
                         Toast.LENGTH_SHORT
@@ -75,8 +104,8 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
     override fun observeData() {
         favouriteViewModel.getFavouriteList().observe(viewLifecycleOwner){ result ->
             when(result){
-                is com.example.core.data.Resource.Loading -> showLoading(true)
-                is com.example.core.data.Resource.Error -> {
+                is Resource.Loading -> showLoading(true)
+                is Resource.Error -> {
                     showLoading(false)
                     Toast.makeText(
                         requireContext(),
@@ -84,7 +113,7 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                is com.example.core.data.Resource.Success ->{
+                is Resource.Success ->{
                     showLoading(false)
                     userAdapter.submitList(result.data)
                 }
@@ -122,10 +151,10 @@ class FavouriteFragment : BaseFragment<FragmentUserlistBinding, FavouriteViewMod
             R.id.theme -> {
                 favouriteViewModel.switchThemeSetting().observe(this){
                     when(it){
-                        is com.example.core.data.Resource.Error -> requireActivity().showToast(
+                        is Resource.Error -> requireActivity().showToast(
                             getString(R.string.error_theme)
                         )
-                        is com.example.core.data.Resource.Success ->{
+                        is Resource.Success ->{
                             favouriteViewModel.getThemeSetting()
                             if(requireActivity() is MainActivity){
                                 (requireActivity() as MainActivity).updateThemeSetting()

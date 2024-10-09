@@ -25,6 +25,10 @@ import com.example.core.ui.ListType
 import com.example.core.ui.UserAdapter
 import com.example.githubuser.ui.main.MainActivity
 import com.example.githubuser.ui.utils.showToast
+import com.google.android.play.core.splitinstall.SplitInstallManagerFactory
+import com.google.android.play.core.splitinstall.SplitInstallRequest
+import com.google.android.play.core.splitinstall.SplitInstallStateUpdatedListener
+import com.google.android.play.core.splitinstall.model.SplitInstallSessionStatus
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -50,8 +54,9 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
         }
 
         userAdapter.onItemClicked = {
-            val action = HomeFragmentDirections.actionUserListFragmentToDetailFragment(it)
-            action.user = it
+            val action = HomeFragmentDirections.actionUserListFragmentToDetailFragment(
+                it.id, it.login, it.isBookmarked ?: false
+            )
             findNavController().navigate(action)
         }
         userAdapter.onBookmarkClicked = {
@@ -164,9 +169,7 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
     override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
         when(menuItem.itemId){
             R.id.favourite -> {
-                val toFavourite =
-                    HomeFragmentDirections.actionUserListFragmentToFavouriteFragment()
-                view?.findNavController()?.navigate(toFavourite)
+                installFavoriteFeature()
             }
             R.id.theme ->{
                 homeViewModel.switchThemeSetting().observe(viewLifecycleOwner){
@@ -187,6 +190,53 @@ class HomeFragment : BaseFragment<FragmentUserlistBinding, HomeViewModel>(
         }
         return true
     }
+
+    private fun installFavoriteFeature() {
+        val favoriteModule = "favorite"
+        val manager = SplitInstallManagerFactory.create(requireContext())
+        if (manager.installedModules.contains(favoriteModule)) {
+            navigateToFavorite()
+        } else {
+            val request = SplitInstallRequest.newBuilder()
+                .addModule(favoriteModule)
+                .build()
+            val listener = SplitInstallStateUpdatedListener {
+                when (it.status()) {
+                    SplitInstallSessionStatus.DOWNLOADING ->{
+                        showLoading(true)
+                    }
+                    SplitInstallSessionStatus.INSTALLED -> {
+                        navigateToFavorite()
+                    }
+                    SplitInstallSessionStatus.FAILED -> {
+                        showLoading(false)
+                        showFailedInstallModuleError()
+                    }
+                    else -> Unit
+                }
+            }
+            manager.registerListener(listener)
+            manager.startInstall(request).addOnFailureListener {
+                showLoading(false)
+                showFailedInstallModuleError()
+            }
+        }
+    }
+
+    private fun navigateToFavorite(){
+        try {
+            val toFavourite =
+                HomeFragmentDirections.actionHomeFragmentToFavoriteNavigation()
+            view?.findNavController()?.navigate(toFavourite)
+        }catch (e: Exception){
+            showFailedInstallModuleError()
+        }
+    }
+
+    private fun showFailedInstallModuleError(){
+        Toast.makeText(requireContext(), "Failed to install module", Toast.LENGTH_SHORT).show()
+    }
+
 
     private fun showLoading(isLoading : Boolean){
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE

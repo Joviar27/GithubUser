@@ -1,6 +1,7 @@
 package com.example.githubuser.ui.detail
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -28,6 +29,7 @@ import com.example.githubuser.ui.main.MainActivity
 import com.example.githubuser.ui.utils.showToast
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import kotlin.math.log
 
 @AndroidEntryPoint
 class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
@@ -40,7 +42,14 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
     private val sectionPagerAdapter by lazy { SectionPagerAdapter(requireActivity()) }
 
     private val user by lazy {
-        DetailFragmentArgs.fromBundle(arguments as Bundle).user
+        DetailFragmentArgs.fromBundle(arguments as Bundle).let {
+            User(
+                id = it.userId,
+                login = it.userLogin,
+                isBookmarked = it.userIsFavorite,
+                avatar_url = ""
+            )
+        }
     }
 
     override fun FragmentDetailBinding.initialize() {

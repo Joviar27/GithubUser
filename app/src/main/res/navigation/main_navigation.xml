@@ -15,25 +15,30 @@
             app:popEnterAnim="@anim/nav_default_pop_enter_anim"
             app:popExitAnim="@anim/nav_default_pop_exit_anim" />
         <action
-            android:id="@+id/action_userListFragment_to_favouriteFragment"
-            app:destination="@id/favouriteFragment" />
+            android:id="@+id/action_homeFragment_to_favorite_navigation"
+            app:destination="@id/favorite_navigation" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.githubuser.ui.detail.DetailFragment"
         android:label="fragment_detail"
-        tools:layout="@layout/fragment_detail" >
+        tools:layout="@layout/fragment_detail">
         <argument
-            android:name="user"
-            app:argType="com.example.core.domain.model.User"/>
+            android:name="userId"
+            app:argType="integer" />
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="android-app://com.example.githubuser/fragment_detail/{userId}/{userLogin}/{userIsFavorite}" />
+        <argument
+            android:name="userLogin"
+            app:argType="string" />
+        <argument
+            android:name="userIsFavorite"
+            app:argType="boolean" />
     </fragment>
-    <fragment
-        android:id="@+id/favouriteFragment"
-        android:name="com.example.githubuser.ui.favourite.FavouriteFragment"
-        android:label="FavouriteFragment"
-        tools:layout="@layout/fragment_userlist">
-        <action
-            android:id="@+id/action_favouriteFragment_to_detailFragment"
-            app:destination="@id/detailFragment" />
-    </fragment>
+    <include-dynamic
+        android:id="@+id/favorite_navigation"
+        app:moduleName="favorite"
+        app:graphResName="favorite_navigation"
+        app:graphPackage="com.example.githubuser.favorite"/>
 </navigation>
