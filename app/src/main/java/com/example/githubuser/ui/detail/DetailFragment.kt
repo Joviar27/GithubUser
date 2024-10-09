@@ -186,11 +186,14 @@ class DetailFragment : BaseFragment<FragmentDetailBinding, DetailViewModel>(
                     detailViewModel.deleteBookmarkedUser(user.id).observe(viewLifecycleOwner){result ->
                         when(result){
                             is Resource.Loading -> Unit
-                            is Resource.Success -> Toast.makeText(
-                                requireContext(),
-                                "Removed from favourite",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            is Resource.Success -> {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Removed from favourite",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                findNavController().navigateUp()
+                            }
                             is Resource.Error -> Toast.makeText(
                                 requireContext(),
                                 "Something Wrong ${result.error}",
